@@ -8,7 +8,7 @@ load_dotenv()
 
 
 PROJECT_ID = os.getenv("PROJECT_ID")
-TOPIC_NAME = os.getenv("TOPIC_NAME")
+SUBSCRIPTION_NAME = os.getenv("SUBSCRIPTION_NAME")
 
 
 class Config:
@@ -25,6 +25,9 @@ class Config:
     OPENAPI_URL_PREFIX = "/"
     OPENAPI_SWAGGER_UI_PATH = "/swagger-ui"
     OPENAPI_SWAGGER_UI_URL = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///data.db")
 
     # Una vez cree la instancia de CloudSQL debe proceder a crear una base de datos y un usuario. 
     # También, debe configurar la instancia de CloudSQL para que reciba tráfico desde nuestra IP pública.
