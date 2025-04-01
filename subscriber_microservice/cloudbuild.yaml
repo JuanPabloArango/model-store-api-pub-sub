@@ -1,0 +1,23 @@
+steps:
+  # 1. Build the new Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "us-east1-docker.pkg.dev/<PROJECT_ID>/<IMAGE_FOLDER_NAME>/<IMAGE_NAME>", "."]
+
+  # 2. Push the image to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-east1-docker.pkg.dev/<PROJECT_ID>/<IMAGE_FOLDER_NAME>/<IMAGE_NAME>:latest"]
+
+  # 3. Deploy the image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - <CLOUD_RUN_NAME>
+      - --port=8080
+      - --memory=1Gi
+      - --region=us-east1
+      - --allow-unauthenticated
+      - --image=us-east1-docker.pkg.dev/<IMAGE_FOLDER_NAME>/<IMAGE_NAME>:latest
+      - --add-cloudsql-instances=<PROJECT_ID>:<CLOUD_SQL_REGION>:<CLOUD_SQL_INSTANCE>
+      - --set-env-vars=USER=<USER>,PASSWORD=<PASSWORD>,CLOUD_SQL_IP_ADDRESS=<PUBLIC_IP_ADDRESS>,DB_NAME=<DB_NAME>,CLOUD_SQL_CONNECTION_NAME=<PROJECT_ID>:<CLOUD_SQL_REGION>:<CLOUD_SQL_INSTANCE>,DATABASE_URL=mysql+pymysql://<USER>:<PASSWORD>@/<DB_NAME>?unix_socket=/cloudsql/<PROJECT_ID>:<CLOUD_SQL_REGION>:<CLOUD_SQL_INSTANCE>
